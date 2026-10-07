@@ -1,17 +1,22 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PixelDoc — Calculateur pièces</title>
+<meta name="description" content="Calculateur de prix de revente de pièces détachées avec marge, octroi de mer et main d'œuvre : outil interne PixelDoc, La Réunion.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0f1117">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236ee7b7'/%3E%3Cstop offset='1' stop-color='%2360a5fa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%230f1117'/%3E%3Crect x='9' y='9' width='6' height='6' fill='%236ee7b7' opacity='.6'/%3E%3Crect x='17' y='13' width='5' height='5' fill='%236ee7b7' opacity='.85'/%3E%3Cpath d='M24 52V16h14a11 11 0 0 1 0 22H24' fill='none' stroke='url(%23g)' stroke-width='8' stroke-linejoin='round' stroke-linecap='round'/%3E%3Ccircle cx='51' cy='18' r='4' fill='%23fb923c'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 /* ===== ROOT ===== */
 :root {
   --bg:#0f1117; --surface:#1a1d27; --surface2:#22263a; --border:#2a2f45;
   --accent:#6ee7b7; --accent2:#f59e0b; --accent3:#f87171;
-  --accent4:#60a5fa; --accent5:#a78bfa; --text:#e2e8f0; --dim:#64748b;
+  --accent4:#60a5fa; --accent5:#a78bfa; --text:#e2e8f0; --dim:#94a3b8;
   --display:'Syne',sans-serif; --body:'DM Sans',sans-serif;
   --radius:14px; --radius-sm:8px;
 }
@@ -243,18 +248,26 @@ tfoot td.fl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spaci
   .pd-nav-link span{display:none;}
   .pd-nav-link{font-size:15px;padding:4px 8px;}
 }
+
+/* ===== ACCESSIBILITÉ & MOBILE (audit) ===== */
+.skip-link{position:absolute;left:-9999px;top:6px;background:#6ee7b7;color:#0f1117;padding:8px 14px;border-radius:6px;font-weight:700;z-index:1000;}
+.skip-link:focus{left:8px;}
+:focus-visible{outline:2px solid #6ee7b7;outline-offset:2px;}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;}}
+@media(max-width:600px){input,select,textarea{font-size:16px!important;}}
 </style>
 </head>
 <body>
 
 <!-- ===== PD-NAVBAR ===== -->
-<nav class="pd-navbar">
+<a class="skip-link" href="#main">Aller au contenu</a>
+<nav class="pd-navbar" aria-label="Sites PixelDoc">
   <div class="pd-navbar-inner">
-    <a href="https://frederic-pixeldoc.github.io/pixeldoc-974/" class="pd-nav-link" target="_blank" rel="noopener">🏠 <span>Vitrine</span></a>
-    <a href="https://frederic-pixeldoc.github.io/pixeldoc-atelier/" class="pd-nav-link" target="_blank" rel="noopener">🔧 <span>Atelier</span></a>
-    <a href="https://frederic-pixeldoc.github.io/stock-reconditionner/" class="pd-nav-link" target="_blank" rel="noopener">📦 <span>Stock</span></a>
-    <a href="https://frederic-pixeldoc.github.io/calculateur-pieces/" class="pd-nav-link pd-nav-active" target="_blank" rel="noopener">🧮 <span>Calculateur</span></a>
-    <a href="https://frederic-pixeldoc.github.io/simulateur-de-prix/" class="pd-nav-link" target="_blank" rel="noopener">💻 <span>Simulateur</span></a>
+    <a href="https://pixeldoc-974.netlify.app/" class="pd-nav-link" target="_blank" rel="noopener">🏠 <span>Vitrine</span></a>
+    <a href="https://pixeldoc-atelier.netlify.app/" class="pd-nav-link" target="_blank" rel="noopener">🔧 <span>Atelier</span></a>
+    <a href="https://stock-reconditionner.netlify.app/" class="pd-nav-link" target="_blank" rel="noopener">📦 <span>Stock</span></a>
+    <a href="https://calculateur-pieces.netlify.app/" class="pd-nav-link pd-nav-active" target="_blank" rel="noopener">🧮 <span>Calculateur</span></a>
+    <a href="https://simulateur-de-prix.netlify.app/" class="pd-nav-link" target="_blank" rel="noopener">💻 <span>Simulateur</span></a>
   </div>
 </nav>
 
@@ -275,17 +288,17 @@ tfoot td.fl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spaci
 </header>
 
 <!-- ===== MAIN ===== -->
-<div class="main">
+<main class="main" id="main">
 
   <!-- Paramètres -->
   <div class="settings">
     <div class="sfield">
-      <label>Marge par défaut</label>
-      <input type="number" id="defMarge" value="30" min="0" max="999" step="1" oninput="saveMeta()">
+      <label for="defMarge">Marge par défaut</label>
+      <input type="number" aria-label="Marge par défaut (%)" id="defMarge" value="30" min="0" max="999" step="1" oninput="saveMeta()">
       <span class="unit">%</span>
     </div>
     <div class="sfield">
-      <label>Taux Octroi de mer</label>
+      <label for="defOctroi">Taux Octroi de mer</label>
       <input type="number" id="defOctroi" value="0" min="0" max="100" step="0.5" oninput="saveMeta()">
       <span class="unit">% <span style="font-size:10px;color:var(--dim)">(appliqué sur achat)</span></span>
     </div>
@@ -362,14 +375,14 @@ tfoot td.fl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spaci
     <button class="btn btn-ghost" onclick="applyOctroi()">⚡ Recalculer l'octroi sur toutes les lignes</button>
   </div>
 
-</div>
+</main>
 
 <!-- ===== CATALOGUE MODAL ===== -->
-<div class="cov" id="cov">
+<div class="cov" id="cov" role="dialog" aria-modal="true" aria-label="Catalogue de pièces">
   <div class="cmod">
     <div class="cmod-head">
       <div class="cmod-title">📦 Catalogue de pièces</div>
-      <button class="ibtn" onclick="closeCatalogue()" title="Fermer">✕</button>
+      <button class="ibtn" onclick="closeCatalogue()" title="Fermer" aria-label="Fermer">✕</button>
     </div>
     <div class="cmod-body" id="catBody"></div>
     <div class="cmod-foot">
@@ -382,7 +395,7 @@ tfoot td.fl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spaci
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 /* ==================== CONFIG ==================== */
@@ -497,17 +510,17 @@ function render() {
     const { cout, revente, total } = calc(r);
     return `
     <tr>
-      <td class="co"><input type="text" value="${esc(r.composant)}" placeholder="ex : SSD 500 Go Samsung" oninput="set('${r.id}','composant',this.value)"></td>
-      <td class="c1"><input type="number" min="0" step="0.01" value="${r.pa || ''}" placeholder="0" oninput="set('${r.id}','pa',this.value)"></td>
-      <td class="c2"><input type="number" min="0" step="0.01" value="${r.port || ''}" placeholder="0" oninput="set('${r.id}','port',this.value)"></td>
+      <td class="co"><input type="text" aria-label="Composant" value="${esc(r.composant)}" placeholder="ex : SSD 500 Go Samsung" oninput="set('${r.id}','composant',this.value)"></td>
+      <td class="c1"><input type="number" aria-label="Prix achat €" min="0" step="0.01" value="${r.pa || ''}" placeholder="0" oninput="set('${r.id}','pa',this.value)"></td>
+      <td class="c2"><input type="number" aria-label="Port / Octroi €" min="0" step="0.01" value="${r.port || ''}" placeholder="0" oninput="set('${r.id}','port',this.value)"></td>
       <td class="c3 td-c" id="cc-${r.id}">${fmt(cout)}</td>
-      <td class="c4"><input type="number" min="0" max="999" step="1" value="${r.marge}" placeholder="30" oninput="set('${r.id}','marge',this.value)"></td>
+      <td class="c4"><input type="number" aria-label="Marge %" min="0" max="999" step="1" value="${r.marge}" placeholder="30" oninput="set('${r.id}','marge',this.value)"></td>
       <td class="c5 td-c" id="cr-${r.id}">${fmt(revente)}</td>
-      <td class="c6"><input type="text" value="${esc(r.moLib)}" placeholder="ex : Remplacement SSD" oninput="set('${r.id}','moLib',this.value)"></td>
-      <td class="cn"><input type="text" value="${esc(r.notes)}" placeholder="Fournisseur, référence…" oninput="set('${r.id}','notes',this.value)"></td>
-      <td class="c7"><input type="number" min="0" step="0.01" value="${r.mo || ''}" placeholder="0" oninput="set('${r.id}','mo',this.value)"></td>
+      <td class="c6"><input type="text" aria-label="Prestation main d\'œuvre" value="${esc(r.moLib)}" placeholder="ex : Remplacement SSD" oninput="set('${r.id}','moLib',this.value)"></td>
+      <td class="cn"><input type="text" aria-label="Notes / Référence" value="${esc(r.notes)}" placeholder="Fournisseur, référence…" oninput="set('${r.id}','notes',this.value)"></td>
+      <td class="c7"><input type="number" aria-label="Tarif main d\'œuvre €" min="0" step="0.01" value="${r.mo || ''}" placeholder="0" oninput="set('${r.id}','mo',this.value)"></td>
       <td class="c8 td-t" id="ct-${r.id}">${fmt(total)}</td>
-      <td class="c9"><button class="ibtn" onclick="del('${r.id}')" title="Supprimer">🗑️</button></td>
+      <td class="c9"><button class="ibtn" onclick="del('${r.id}')" title="Supprimer" aria-label="Supprimer la ligne">🗑️</button></td>
     </tr>`;
   }).join('');
 
