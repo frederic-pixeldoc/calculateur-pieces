@@ -1,0 +1,6 @@
+{
+  "name": "calculateur-pieces",
+  "private": true,
+  "description": "Calculateur de prix de revente de pièces détachées (PixelDoc, La Réunion)",
+  "scripts": { "test": "node --test tests/*.test.js" }
+}
