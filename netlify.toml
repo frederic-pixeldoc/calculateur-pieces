@@ -14,3 +14,9 @@
   [headers.values]
     Content-Type = "application/manifest+json"
     Cache-Control = "no-cache"
+
+# Outil interne : ne pas indexer (en complément de la balise meta robots et de robots.txt)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
